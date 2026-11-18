@@ -1,0 +1,2 @@
+# fotoku
+Fotoku-Lolos Kurasi
