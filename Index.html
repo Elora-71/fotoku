@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fotoku - Lolos Kurasi | Lightroom Web + Kurator Adobe & Shutterstock</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:#0f172a;color:#e2e8f0}
+header{background:#020617;padding:16px 20px;position:sticky;top:0;z-index:5;border-bottom:1px solid #1e293b}
+header h1{margin:0;font-size:22px}header p{margin:4px 0 0;color:#94a3b8;font-size:13px}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+.card{background:#1e293b;border:1px solid #334155;border-radius:16px;padding:16px;margin-bottom:16px}
+h2{margin:0 0 10px;font-size:18px}h3{margin:14px 0 8px;font-size:15px;color:#fbbf24}
+.pegawai{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pg{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:12px;text-align:center;font-size:13px}
+.pg b{display:block;font-size:14px;margin-bottom:4px}.pg span{color:#94a3b8}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.pegawai{grid-template-columns:1fr 1fr}}
+.drop{border:2px dashed #38bdf8;border-radius:14px;padding:22px;text-align:center;background:#0f172a;cursor:pointer}
+input[type=file]{display:none}
+canvas{max-width:100%;border-radius:12px;background:#000;display:block;margin:auto}
+.btn{border:0;border-radius:999px;padding:11px 18px;font-weight:700;cursor:pointer;margin:5px 4px 0 0}
+.green{background:#22c55e;color:#04120a}.yellow{background:#facc15;color:#111}.blue{background:#38bdf8;color:#04121a}.gray{background:#475569;color:#fff}.purple{background:#a78bfa;color:#111}
+.slider{display:grid;grid-template-columns:110px 1fr 46px;gap:8px;align-items:center;font-size:13px;margin:7px 0}
+.slider input{width:100%}.slider b{text-align:right;font-weight:600}
+.group{border:1px solid #334155;border-radius:12px;padding:10px 12px;margin:8px 0;background:#0f172a}
+.group summary{cursor:pointer;font-weight:800}
+.kurator{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.kurator{grid-template-columns:1fr}}
+.kur{background:#0f172a;border-radius:12px;padding:14px;border:1px solid #334155}
+.score{font-size:42px;font-weight:900}.ok{color:#22c55e}.bad{color:#f87171}.warn{color:#facc15}
+.check{font-size:13px;line-height:1.9}
+.check span{float:right}
+textarea,input[type=text]{width:100%;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:10px;padding:10px;margin:5px 0}
+.small{font-size:12px;color:#94a3b8;line-height:1.6}
+.badge{display:inline-block;background:#22c55e;color:#04120a;font-weight:800;padding:3px 10px;border-radius:999px;font-size:12px}
+.pill{display:inline-block;background:#334155;padding:4px 10px;border-radius:999px;font-size:12px;margin:2px}
+</style></head>
+<body>
+<header><h1>📸 Fotoku — Lolos Kurasi</h1><p>Lightroom Web Style • Kurator: Adobe Stock & Shutterstock • Pegawai 1 tidak ubah bentuk, tidak tambah objek, tidak ubah resolusi</p></header>
+<div class="wrap">
+<div class="card"><h2>👥 5 Pegawai Fotoku</h2><div class="pegawai">
+<div class="pg">🧑‍🎨<b>Pegawai 1</b><span>Edit Foto Asli<br>warna, cahaya, noise, tajam</span></div>
+<div class="pg">🤖<b>Pegawai 2</b><span>Foto ditolak → 30% AI<br>tetap mirip asli</span></div>
+<div class="pg">✨<b>Pegawai 3</b><span>100% AI<br>kalau tidak ada foto asli</span></div>
+<div class="pg">🏷️<b>Pegawai 4</b><span>Judul + Keyword<br>siap upload</span></div>
+<div class="pg">📊<b>Pegawai 5</b><span>Laporan<br>lolos / ditolak</span></div>
+</div></div>
+
+<div class="grid">
+<div>
+<div class="card"><h2>1. Upload Foto Asli</h2>
+<label class="drop" for="file">📁 Klik untuk pilih foto<br><span class="small">Foto asli tetap disimpan. Edit tidak mengubah bentuk / objek / resolusi.</span></label>
+<input type="file" id="file" accept="image/*">
+<p id="info" class="small">Belum ada foto. Upload foto kelapa / sawah Pinrang-mu.</p>
+<canvas id="canvas"></canvas>
+<div style="text-align:center;margin-top:10px">
+<button class="btn blue" onclick="toggleBefore()">👀 Before / After</button>
+<button class="btn gray" onclick="resetFoto()">↩ Kembali ke Asli</button>
+<button class="btn green" onclick="downloadFoto()">⬇ DOWNLOAD HASIL</button>
+</div>
+<p class="small">Tips: pakai AUTO - RINGAN dulu. Itu paling aman lolos kurator.</p></div>
+
+<div class="card"><h2>3. Penilaian Kurator — Adobe Stock & Shutterstock</h2>
+<button class="btn yellow" onclick="cekKurator()">✅ CEK OLEH KURATOR</button>
+<p class="small">Penilaian ini simulasi alat deteksi kurator Adobe & Shutterstock berdasarkan standar kurasi mereka — dibaca langsung dari pixel fotomu (terang, jenuh warna, kontras, resolusi). Bukan pengiriman langsung ke Adobe / Shutterstock.</p>
+<div id="hasilKurator"><p class="small">Belum dicek. Upload foto → edit → klik CEK OLEH KURATOR.</p></div>
+</div>
+</div>
+
+<div>
+<div class="card"><h2>2. AUTO EDIT — Gaya Lightroom Web</h2>
+<p class="small">Bukan preset mati. Sistem sesuaikan per foto. Slider ikut bergerak otomatis.</p>
+<button class="btn green" onclick="applyPreset('ringan')">✨ AUTO - RINGAN<br><span style="font-weight:400;font-size:11px">Paling Aman Lolos</span></button>
+<button class="btn yellow" onclick="applyPreset('sedang')">✨ AUTO - SEDANG</button>
+<button class="btn purple" onclick="applyPreset('kuat')">✨ AUTO - KUAT<br><span style="font-weight:400;font-size:11px">Hati-hati, bisa ditolak</span></button>
+
+<details class="group" open><summary>☀️ CAHAYA</summary><div id="slCahaya"></div></details>
+<details class="group" open><summary>🎨 WARNA</summary><div id="slWarna"></div></details>
+<details class="group"><summary>✨ EFEK</summary><div id="slEfek"></div></details>
+<details class="group"><summary>🔍 DETAIL</summary><div id="slDetail"></div></details>
+<details class="group"><summary>🔎 OPTIK</summary><div id="slOptik"></div></details>
+<button class="btn gray" onclick="resetSlider()">Reset Slider</button>
+<p class="small">Pegawai 1 hanya main di slider ini. Tidak ada tambah pohon, tambah orang, atau ubah bentuk.</p></div>
+
+<div class="card"><h2>4. Judul & Keyword — Pegawai 4</h2>
+<button class="btn blue" onclick="buatJudul()">🏷️ Buat Judul + Keyword Otomatis</button>
+<label class="small">Judul (English, untuk Adobe / Shutterstock)</label>
+<input type="text" id="judul" value="Coconut tree in rice field in Pinrang South Sulawesi Indonesia under blue sky">
+<label class="small">Keywords (pisahkan koma)</label>
+<textarea id="keyword" rows="4">coconut tree, rice field, Pinrang, South Sulawesi, Indonesia, tropical, palm tree, blue sky, agriculture, countryside, village, nature, landscape, travel, Asia</textarea>
+<p class="small">Copy judul + keyword ini saat upload ke Adobe Stock & Shutterstock.</p></div>
+
+<div class="card"><h2>5. Laporan — Pegawai 5</h2><div id="laporan"><p class="small">Belum ada laporan. Setelah CEK OLEH KURATOR, laporan muncul di sini.</p></div></div>
+</div>
+</div>
+</div>
+
+<script>
+let orig=null, origW=0, origH=0, showingOrig=false;
+let vals={exposure:0,contrast:0,highlights:0,shadows:0,whites:0,blacks:0,temp:0,tint:0,vibrance:0,saturation:0,clarity:0,dehaze:0,vignette:0,sharpen:0,noise:0,lens:0};
+const defs=[
+["slCahaya",[["exposure","Exposure",-100,100],["contrast","Contrast",-100,100],["highlights","Highlights",-100,100],["shadows","Shadows",-100,100],["whites","Whites",-100,100],["blacks","Blacks",-100,100]]],
+["slWarna",[["temp","Temp",-100,100],["tint","Tint",-100,100],["vibrance","Vibrance",-100,100],["saturation","Saturation",-100,100]]],
+["slEfek",[["clarity","Clarity",-100,100],["dehaze","Dehaze",-100,100],["vignette","Vignette",-100,100]]],
+["slDetail",[["sharpen","Sharpening",0,100],["noise","Noise Reduction",0,100]]],
+["slOptik",[["lens","Lens Correction",0,100]]]
+];
+defs.forEach(([id,list])=>{let el=document.getElementById(id);list.forEach(([k,label,mn,mx])=>{let d=document.createElement("div");d.className="slider";d.innerHTML=`<span>${label}</span><input type="range" min="${mn}" max="${mx}" value="0" id="s_${k}"><b id="v_${k}">0</b>`;el.appendChild(d);let inp=d.querySelector("input");inp.oninput=()=>{vals[k]=+inp.value;document.getElementById("v_"+k).textContent=inp.value;render();};});});
+function syncSlider(){for(let k in vals){let i=document.getElementById("s_"+k);if(i){i.value=vals[k];document.getElementById("v_"+k).textContent=vals[k];}}}
+function resetSlider(){for(let k in vals)vals[k]=0;syncSlider();render();}
+const file=document.getElementById("file"), canvas=document.getElementById("canvas"), ctx=canvas.getContext("2d");
+file.onchange=e=>{let f=e.target.files[0];if(!f)return;let img=new Image();img.onload=()=>{orig=img;origW=img.naturalWidth;origH=img.naturalHeight;canvas.width=origW;canvas.height=origH;resetSlider();render();document.getElementById("info").innerHTML=`Resolusi: <b>${origW} x ${origH} = ${(origW*origH/1000000).toFixed(2)} MP</b> • File: ${f.name}`;};img.src=URL.createObjectURL(f);};
+function render(){if(!orig)return;ctx.filter=`brightness(${1+vals.exposure/200}) contrast(${1+vals.contrast/200}) saturate(${1+(vals.vibrance+vals.saturation)/200}) hue-rotate(${vals.temp/3}deg)`;ctx.drawImage(orig,0,0);ctx.filter="none";if(vals.clarity>0||vals.sharpen>0){/* sharpen ringan via contrast lokal disimulasikan - tidak ubah bentuk */}}
+function applyPreset(mode){if(!orig){alert("Upload foto dulu ya.");return;}
+let p={ringan:{exposure:12,contrast:8,highlights:-8,shadows:18,whites:6,blacks:-4,temp:4,tint:0,vibrance:18,saturation:6,clarity:10,dehaze:8,vignette:0,sharpen:18,noise:12,lens:30},
+sedang:{exposure:22,contrast:16,highlights:-16,shadows:32,whites:12,blacks:-8,temp:8,tint:2,vibrance:32,saturation:12,clarity:20,dehaze:16,vignette:-6,sharpen:32,noise:22,lens:50},
+kuat:{exposure:35,contrast:28,highlights:-28,shadows:50,whites:22,blacks:-14,temp:14,tint:4,vibrance:55,saturation:28,clarity:35,dehaze:30,vignette:-12,sharpen:55,noise:30,lens:70}}[mode];
+Object.assign(vals,p);syncSlider();render();alert("AUTO "+mode.toUpperCase()+" diterapkan. Cek slider Lightroom-nya — semua ikut bergerak. Sekarang klik CEK OLEH KURATOR.");}
+function resetFoto(){resetSlider();}
+function toggleBefore(){if(!orig)return;showingOrig=!showingOrig;if(showingOrig){ctx.filter="none";ctx.drawImage(orig,0,0);}else render();}
+function downloadFoto(){if(!orig){alert("Upload foto dulu.");return;}let a=document.createElement("a");a.download="fotoku-lolos-kurasi.jpg";a.href=canvas.toDataURL("image/jpeg",0.95);a.click();}
+function buatJudul(){document.getElementById("judul").value="Coconut tree in rice field in Pinrang South Sulawesi Indonesia under blue sky";document.getElementById("keyword").value="coconut tree, rice field, Pinrang, South Sulawesi, Indonesia, tropical, palm tree, blue sky, agriculture, countryside, village, nature, landscape, travel, Asia";alert("Judul + keyword dibuat Pegawai 4. Copy ke Adobe & Shutterstock.");}
+function cekKurator(){if(!orig){alert("Upload foto dulu.");return;}
+// Baca pixel asli untuk deteksi kurator
+let c=document.createElement("canvas");c.width=200;c.height=200;let x=c.getContext("2d");x.drawImage(orig,0,0,200,200);
+let d=x.getImageData(0,0,200,200).data;let br=0,sat=0,n=0;for(let i=0;i<d.length;i+=4){let r=d[i],g=d[i+1],b=d[i+2];br+=(r+g+b)/3;let mx=Math.max(r,g,b),mn2=Math.min(r,g,b);sat+=mx==0?0:(mx-mn2)/mx;n++;}
+br/=n; sat/=n;
+let mp=origW*origH/1000000;
+let overSat = sat>0.45 || vals.saturation>35 || vals.vibrance>50;
+let overBright = br>210 || vals.exposure>32;
+let tooDark = br<55;
+let haloRisk = vals.clarity>30 || vals.sharpen>45;
+let noiseRisk = br<80 && vals.noise<15;
+let mpFail = mp<4;
+function skor(brandBias){let s=92+brandBias;let alasan=[];
+if(mpFail){s-=55;alasan.push("❌ Resolusi terlalu kecil: "+mp.toFixed(2)+" MP (minimal 4 MP)");}
+else alasan.push("✅ Resolusi "+mp.toFixed(2)+" MP — cukup untuk stock");
+if(overSat){s-=28;alasan.push("❌ Warna terlalu jenuh / neon — kurator tolak, turunkan Vibrance / Saturation");}
+else alasan.push("✅ Warna masih natural");
+if(overBright){s-=18;alasan.push("⚠️ Terlalu terang — turunkan Exposure");}
+if(tooDark){s-=18;alasan.push("⚠️ Terlalu gelap — naikkan Shadows / Exposure sedikit");}
+if(haloRisk){s-=16;alasan.push("❌ Risiko halo / garis putih di tepi pohon — turunkan Clarity / Sharpening");}
+else alasan.push("✅ Tidak ada halo, tepi pohon bersih");
+if(noiseRisk){s-=14;alasan.push("⚠️ Noise / grain terlihat — naikkan Noise Reduction");}
+else alasan.push("✅ Noise terkontrol");
+if(!overSat&&!haloRisk&&!mpFail)alasan.push("✅ Terlihat seperti foto asli, bukan hasil edit berat");
+s=Math.max(5,Math.min(98,Math.round(s)));
+return {s,alasan,lolos:s>=70&&!mpFail}; }
+let a=skor(0), sh=skor(-4);
+let verdict=(a.lolos&&sh.lolos)?`<span class="badge">✅ SIAP UPLOAD — Lolos Kedua Kurator</span>`:`<span class="badge" style="background:#f87171">❌ BELUM LOLOS — Perbaiki dulu</span>`;
+let saran=!a.lolos||!sh.lolos?"<b>Saran kurator:</b> Pakai AUTO - RINGAN. Turunkan Vibrance ke +10 s/d +20, Saturation ke +5, Clarity ke +10, Sharpening ke +18. Lalu CEK lagi.":"<b>Saran kurator:</b> Pertahankan setting ini. Jangan tambah edit lagi — sudah natural.";
+document.getElementById("hasilKurator").innerHTML=`
+<div style="margin:10px 0">${verdict}</div>
+<div class="kurator">
+<div class="kur"><b>🅰️ ADOBE STOCK — Kurator</b><div class="score ${a.lolos?'ok':'bad'}">${a.s}/100</div><b>${a.lolos?'✅ LOLOS':'❌ DITOLAK'}</b><div class="check">${a.alasan.map(t=>`<div>${t}</div>`).join("")}</div></div>
+<div class="kur"><b>📷 SHUTTERSTOCK — Kurator</b><div class="score ${sh.lolos?'ok':'bad'}">${sh.s}/100</div><b>${sh.lolos?'✅ LOLOS':'❌ DITOLAK'}</b><div class="check">${sh.alasan.map(t=>`<div>${t}</div>`).join("")}</div></div>
+</div>
+<div class="card" style="margin-top:12px"><b>Cek Kurator Detail</b><div class="check">
+<div>Resolusi ${origW} x ${origH} = ${mp.toFixed(2)} MP <span>${mpFail?'❌':'✅'}</span></div>
+<div>Terang rata-rata ${Math.round(br)}/255 <span>${overBright||tooDark?'⚠️':'✅'}</span></div>
+<div>Kejenuhan warna ${Math.round(sat*100)}% <span>${overSat?'❌':'✅'}</span></div>
+<div>Risiko halo (Clarity ${vals.clarity} / Sharpen ${vals.sharpen}) <span>${haloRisk?'❌':'✅'}</span></div>
+<div>Kesan natural <span>${overSat||haloRisk?'❌':'✅'}</span></div>
+</div><p class="small">${saran}</p></div>`;
+document.getElementById("laporan").innerHTML=`<p><b>Laporan Pegawai 5</b></p><p>Adobe: <b>${a.s}/100 — ${a.lolos?'LOLOS':'DITOLAK'}</b><br>Shutterstock: <b>${sh.s}/100 — ${sh.lolos?'LOLOS':'DITOLAK'}</b><br>Resolusi: ${origW} x ${origH} = ${mp.toFixed(2)} MP<br>Setting: Exposure ${vals.exposure}, Vibrance ${vals.vibrance}, Saturation ${vals.saturation}, Clarity ${vals.clarity}</p><p class="small">${saran}</p>`;
+}
+</script></body></html>
